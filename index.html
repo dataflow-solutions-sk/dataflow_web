@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DataFlow Solutions — PDF Extraktor v1.5</title>
+  <meta name="description" content="Automatická extrakcia technických parametrov z PDF datasheetov do Excelu. Bez prepisovania. Bez preklepov.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #111111;
+      --bg-dark:  #0d0d0d;
+      --bg-card:  #181818;
+      --accent:   #f0c040;
+      --text:     #e8dfc8;
+      --muted:    #888888;
+      --border:   #2e2e2e;
+      --radius:   10px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    /* ── UTILS ─────────────────────────────────────────── */
+    .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+    .section    { padding: 80px 0; }
+    .section-sm { padding: 64px 0; }
+    .divider    { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+    h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 700; line-height: 1.2; }
+    h2 { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 700; line-height: 1.3; }
+    h3 { font-size: 1.15rem; font-weight: 600; }
+
+    .accent  { color: var(--accent); }
+    .muted   { color: var(--muted); }
+    .center  { text-align: center; }
+
+    /* ── BUTTON ────────────────────────────────────────── */
+    .btn {
+      display: inline-block;
+      background: var(--accent);
+      color: #111;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 14px 32px;
+      border-radius: var(--radius);
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: opacity .15s, transform .1s;
+    }
+    .btn:hover  { opacity: .88; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+
+    /* ── NAVBAR ────────────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(17,17,17,.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .logo {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      text-decoration: none;
+    }
+    .logo-bolt { font-size: 1.4rem; line-height: 1; color: var(--accent); }
+    .logo-name { font-size: 1.1rem; font-weight: 700; color: #ffffff; letter-spacing: .02em; }
+    .logo-sub  { font-size: .75rem; color: var(--muted); margin-left: -4px; }
+    .logo-wrap { display: flex; flex-direction: column; line-height: 1.1; }
+
+    nav a.nav-link {
+      color: var(--text);
+      text-decoration: none;
+      font-size: .95rem;
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      transition: border-color .15s, color .15s;
+    }
+    nav a.nav-link:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── HERO ──────────────────────────────────────────── */
+    .hero {
+      padding: 100px 0 80px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(240,192,64,.12);
+      color: var(--accent);
+      font-size: .8rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(240,192,64,.25);
+      margin-bottom: 24px;
+    }
+    .hero h1 { margin-bottom: 20px; }
+    .hero p  { font-size: 1.15rem; color: var(--muted); max-width: 540px; margin: 0 auto 36px; }
+
+    /* ── PROBLEM CARDS ─────────────────────────────────── */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      transition: border-color .2s;
+    }
+    .card:hover { border-color: rgba(240,192,64,.3); }
+    .card-icon  { font-size: 1.8rem; margin-bottom: 12px; }
+    .card h3    { margin-bottom: 8px; }
+    .card p     { color: var(--muted); font-size: .95rem; }
+
+    /* ── SOLUTION ──────────────────────────────────────── */
+    .solution-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+    .solution-visual {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      text-align: center;
+      font-size: 3.5rem;
+      line-height: 1;
+    }
+    .solution-visual .vis-label {
+      font-size: .85rem;
+      color: var(--muted);
+      margin-top: 12px;
+      display: block;
+    }
+    .solution-visual .vis-arrow {
+      font-size: 1.5rem;
+      color: var(--accent);
+      margin: 12px 0;
+      display: block;
+    }
+    .solution-list { list-style: none; margin-top: 20px; }
+    .solution-list li {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+      font-size: .95rem;
+      display: flex;
+      gap: 10px;
+    }
+    .solution-list li:last-child { border-bottom: none; }
+    .solution-list li .chk { color: var(--accent); font-weight: 700; flex-shrink: 0; }
+
+    /* ── PRICE ─────────────────────────────────────────── */
+    .price-card {
+      max-width: 420px;
+      margin: 0 auto;
+      background: var(--bg-card);
+      border: 1px solid var(--accent);
+      border-radius: 14px;
+      padding: 44px 40px;
+      text-align: center;
+    }
+    .price-amount {
+      font-size: 3.2rem;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .price-note { color: var(--muted); font-size: .9rem; margin-bottom: 28px; }
+    .price-features { list-style: none; margin-bottom: 32px; text-align: left; }
+    .price-features li {
+      padding: 9px 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 10px;
+      color: var(--muted);
+      font-size: .95rem;
+    }
+    .price-features li:last-child { border-bottom: none; }
+    .price-features li .chk { color: var(--accent); font-weight: 700; }
+
+    /* ── CONTACT ───────────────────────────────────────── */
+    #kontakt { background: var(--bg-dark); }
+    .contact-inner {
+      max-width: 560px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .contact-inner h2 { margin-bottom: 16px; }
+    .contact-inner p  { color: var(--muted); margin-bottom: 28px; }
+    .email-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-bottom: 1px solid transparent;
+      transition: border-color .15s;
+    }
+    .email-link:hover { border-bottom-color: var(--accent); }
+
+    /* ── STORY (SEKCIA 6) ──────────────────────────────── */
+    .story-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .story-header .label {
+      display: inline-block;
+      color: var(--accent);
+      font-size: .8rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .story-card {
+      max-width: 640px;
+      margin: 0 auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .story-toggle-btn {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 20px 28px;
+      cursor: pointer;
+      text-align: left;
+      transition: background .15s;
+    }
+    .story-toggle-btn:hover { background: rgba(255,255,255,.03); }
+    .story-toggle-btn .arrow {
+      color: var(--accent);
+      font-size: 1rem;
+      transition: transform .3s;
+      flex-shrink: 0;
+    }
+    .story-toggle-btn.open .arrow { transform: rotate(180deg); }
+    .story-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .4s ease, padding .3s ease;
+    }
+    .story-body.open {
+      max-height: 400px;
+    }
+    .story-body-inner {
+      padding: 0 28px 28px;
+      border-top: 1px solid var(--border);
+    }
+    .story-body.open .story-body-inner { padding-top: 24px; }
+    .story-text { color: var(--muted); font-size: .97rem; line-height: 1.8; white-space: pre-line; }
+
+    /* ── VISION (SEKCIA 7) ─────────────────────────────── */
+    .vision {
+      background: var(--bg-dark);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 100px 0;
+    }
+    .vision-headline {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+    .vision-headline h2 {
+      font-size: clamp(1.7rem, 4vw, 2.4rem);
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    .vision-headline .subline {
+      font-size: 1.1rem;
+      color: var(--muted);
+    }
+    .vision-cols {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+      margin-bottom: 48px;
+    }
+    .vision-col {
+      background: rgba(255,255,255,.025);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+    }
+    .vision-col-icon { font-size: 1.6rem; margin-bottom: 12px; }
+    .vision-col h3   { margin-bottom: 12px; color: var(--text); }
+    .vision-col p    { color: var(--muted); font-size: .93rem; line-height: 1.7; }
+    .vision-footer-text {
+      text-align: center;
+      font-style: italic;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    /* ── FOOTER ────────────────────────────────────────── */
+    footer {
+      background: var(--bg-dark);
+      border-top: 1px solid var(--border);
+      padding: 32px 24px;
+      text-align: center;
+    }
+    footer p { color: var(--muted); font-size: .85rem; line-height: 1.8; }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--text); }
+
+    /* ── SECTION LABELS ────────────────────────────────── */
+    .section-label {
+      display: inline-block;
+      color: var(--accent);
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    /* ── RESPONSIVE ────────────────────────────────────── */
+    @media (max-width: 700px) {
+      .cards               { grid-template-columns: 1fr; }
+      .solution-layout     { grid-template-columns: 1fr; gap: 32px; }
+      .solution-visual     { order: -1; }
+      .vision-cols         { grid-template-columns: 1fr; }
+      .price-card          { padding: 32px 24px; }
+      .hero                { padding: 72px 0 56px; }
+      .section             { padding: 56px 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  NAVBAR                                                -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="logo">
+      <span class="logo-bolt">⚡</span>
+      <div class="logo-wrap">
+        <span class="logo-name">DataFlow</span>
+        <span class="logo-sub">Solutions</span>
+      </div>
+    </a>
+    <a href="#kontakt" class="nav-link">Kontakt</a>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  SEKCIA 1 — HERO                                       -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">PDF Extraktor v1.5</div>
+    <h1>Z PDF datasheetu do&nbsp;Excelu<br><span class="accent">za 2 minúty</span></h1>
+    <p>Automatická extrakcia technických parametrov.<br>Bez prepisovania. Bez preklepov.</p>
+    <a href="#kontakt" class="btn">Vyskúšať zadarmo</a>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  SEKCIA 2 — PROBLÉM                                    -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="container">
+    <div class="center" style="margin-bottom:40px;">
+      <span class="section-label">Problém</span>
+      <h2>Poznáte to</h2>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon">⏱</div>
+        <h3>10 minút na datasheet</h3>
+        <p>Každý parameter prepisujete ručne — bunka po bunke, datasheet po datasheete.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📊</div>
+        <h3>50+ hodín ročne</h3>
+        <p>Takmer 1,5 pracovného týždňa zbytočne. Práca, na ktorú ste neštudovali techniku.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚠</div>
+        <h3>Jeden preklep = drahá oprava</h3>
+        <p>V priereze, prúde, výkone. A v ďalšej fáze projektu sa to rieši veľmi draho.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  SEKCIA 3 — RIEŠENIE                                   -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="container">
+    <div class="solution-layout">
+      <div>
+        <span class="section-label">Riešenie</span>
+        <h2 style="margin-bottom:16px;">PDF Extraktor v1.5</h2>
+        <p style="color:var(--muted); margin-bottom:24px;">
+          Nahrajte PDF datasheety. Za pár minút dostanete hotovú Excel tabuľku so všetkými parametrami.
+        </p>
+        <ul class="solution-list">
+          <li><span class="chk">✓</span> Typ, prúd, napätie, prierez — automaticky</li>
+          <li><span class="chk">✓</span> Funguje s datasheetmi výrobcov (Siemens, ABB, Schneider...)</li>
+          <li><span class="chk">✓</span> Výstup priamo do Excelu, bez zbytočných krokov</li>
+          <li><span class="chk">✓</span> Lokálna aplikácia — vaše dáta zostávajú u vás</li>
+        </ul>
+      </div>
+      <div class="solution-visual">
+        <div>📄</div>
+        <span class="vis-label">PDF datasheet</span>
+        <span class="vis-arrow">⚡</span>
+        <div>📊</div>
+        <span class="vis-label">Excel tabuľka</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  SEKCIA 4 — CENA                                       -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="section" style="background:var(--bg-dark);">
+  <div class="container">
+    <div class="center" style="margin-bottom:40px;">
+      <span class="section-label">Cena</span>
+      <h2>Jednoduché a transparentné</h2>
+    </div>
+    <div class="price-card">
+      <div class="price-amount">500 EUR</div>
+      <p class="price-note">Jednorazová platba. Bez mesačných poplatkov.</p>
+      <ul class="price-features">
+        <li><span class="chk">✓</span> Trvalá licencia</li>
+        <li><span class="chk">✓</span> 10 PDF zadarmo na vyskúšanie</li>
+        <li><span class="chk">✓</span> Podpora emailom</li>
+      </ul>
+      <a href="#kontakt" class="btn" style="width:100%; text-align:center; display:block;">Vyskúšať 10 PDF zadarmo</a>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  SEKCIA 5 — KONTAKT                                    -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="section" id="kontakt">
+  <div class="container">
+    <div class="contact-inner">
+      <span class="section-label">Kontakt</span>
+      <h2>Vyskúšajte zadarmo</h2>
+      <p>
+        Pošlite nám email s vašimi PDF datasheetmi.<br>
+        Do druhého dňa dostanete Excel späť — bez záväzku.
+      </p>
+      <a href="mailto:mail@dataflowsolutions.sk" class="email-link">
+        <span>✉</span>
+        mail@dataflowsolutions.sk
+      </a>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  SEKCIA 6 — PRÍBEH                                     -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="section-sm">
+  <div class="container">
+    <div class="story-header">
+      <span class="label">Ako to začalo</span>
+      <h2>Náš príbeh</h2>
+    </div>
+    <div class="story-card">
+      <button class="story-toggle-btn" onclick="toggleStory(this)" aria-expanded="false">
+        <span>Čítať viac</span>
+        <span class="arrow">↓</span>
+      </button>
+      <div class="story-body" id="storyBody">
+        <div class="story-body-inner">
+          <p class="story-text">PDF Extraktor vznikol z frustrácie.
+
+Sledoval som ako elektroprojektanti a strojárski inžinieri trávia hodiny prepisovaním parametrov z PDF datasheetov do Excelu — ručne, bunka po bunke.
+
+Práca, na ktorú neštudovali techniku.
+
+Rozhodol som sa to zmeniť. Výsledkom je nástroj ktorý túto prácu robí za pár sekúnd.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  SEKCIA 7 — VÍZIA                                      -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="vision">
+  <div class="container">
+    <div class="vision-headline">
+      <h2>Európa vie konkurovať USA aj Číne v AI.</h2>
+      <p class="subline">Stačí začať.</p>
+    </div>
+    <div class="vision-cols">
+      <div class="vision-col">
+        <div class="vision-col-icon">🇪🇺</div>
+        <h3>Európsky startup</h3>
+        <p>Vznikli sme na Slovensku. Stavíme na európske hodnoty — súkromie, kvalita, spoľahlivosť. Vaše dáta zostávajú u vás.</p>
+      </div>
+      <div class="vision-col">
+        <div class="vision-col-icon">⚡</div>
+        <h3>AI pre priemysel</h3>
+        <p>Nie AI pre chatovanie. AI ktorá reálne šetrí hodiny práce európskym inžinierom každý deň.</p>
+      </div>
+      <div class="vision-col">
+        <div class="vision-col-icon">🚀</div>
+        <h3>Mladá generácia</h3>
+        <p>Veríme že budúcnosť európskeho priemyslu stavia tá generácia ktorá s AI vyrastala.</p>
+      </div>
+    </div>
+    <p class="vision-footer-text">DataFlow Solutions — slovenský startup, európska ambícia.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  FOOTER                                                -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<footer>
+  <p>© 2026 DataFlow Solutions</p>
+  <p><a href="https://dataflowsolutions.sk">dataflowsolutions.sk</a></p>
+  <p style="margin-top:8px;">Softvér je chránený autorským zákonom.</p>
+</footer>
+
+<script>
+  function toggleStory(btn) {
+    const body = document.getElementById('storyBody');
+    const isOpen = body.classList.contains('open');
+    const label  = btn.querySelector('span:first-child');
+
+    if (isOpen) {
+      body.classList.remove('open');
+      btn.classList.remove('open');
+      label.textContent = 'Čítať viac';
+      btn.setAttribute('aria-expanded', 'false');
+    } else {
+      body.classList.add('open');
+      btn.classList.add('open');
+      label.textContent = 'Zavrieť';
+      btn.setAttribute('aria-expanded', 'true');
+    }
+  }
+</script>
+</body>
+</html>

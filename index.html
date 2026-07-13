@@ -682,28 +682,28 @@
           <input type="radio" name="konf-plan" value="plan1">
           <div class="konf-plan-cislo">#1</div>
           <div class="konf-plan-nazov">PDF Extraktor</div>
-          <div class="konf-plan-popis">1 jazyk, obmedzené strany</div>
+          <div class="konf-plan-popis">1 jazyk (váš vlastný)</div>
           <div class="konf-plan-cena">399 €</div>
         </label>
         <label class="konf-plan-karta">
           <input type="radio" name="konf-plan" value="plan2">
           <div class="konf-plan-cislo">#2</div>
-          <div class="konf-plan-nazov">+ Tri jazyky</div>
-          <div class="konf-plan-popis">3 jazyky, viac strán</div>
+          <div class="konf-plan-nazov">+ Druhý jazyk</div>
+          <div class="konf-plan-popis">+ 1 jazyk podľa výberu</div>
           <div class="konf-plan-cena">499 €</div>
         </label>
         <label class="konf-plan-karta">
           <input type="radio" name="konf-plan" value="plan3">
           <div class="konf-plan-cislo">#3</div>
-          <div class="konf-plan-nazov">+ Web integrácia</div>
-          <div class="konf-plan-popis">Neobmedzené dokumenty</div>
+          <div class="konf-plan-nazov">+ Tretí jazyk + Web integrácia</div>
+          <div class="konf-plan-popis">+ 1 jazyk podľa výberu + web integrácia</div>
           <div class="konf-plan-cena">699 €</div>
         </label>
         <label class="konf-plan-karta">
           <input type="radio" name="konf-plan" value="plan4">
           <div class="konf-plan-cislo">#4</div>
-          <div class="konf-plan-nazov">+ Správca lokálne</div>
-          <div class="konf-plan-popis">Všetko + lokálny triedič</div>
+          <div class="konf-plan-nazov">+ Všetky jazyky + Správca emailov</div>
+          <div class="konf-plan-popis">+ všetky jazyky odvetvia + web integrácia + správca emailov</div>
           <div class="konf-plan-cena">999 €</div>
         </label>
       </div>
@@ -956,17 +956,18 @@ s technickou dokumentáciou.</p>
 
   // Zdielany zdroj s backend/ceny.py + backend/pricing.py (pdf_extraktor
   // repozitar) - pri zmene cien/jazykov treba upravit na oboch miestach,
-  // tento web nema spolocny build s pdf_extraktor.
+  // tento web nema spolocny build s pdf_extraktor. Ceny za extra jazyk
+  // su % zo zakladnej ceny (plan1=100%, plan2=50%, plan3=30%, plan4=0%).
   const KONF_CENY_JAZYKOV = {
-    cz: {plan1: 99,  plan2: 59,  plan3: 35,  plan4: 0},
-    pl: {plan1: 99,  plan2: 59,  plan3: 35,  plan4: 0},
-    de: {plan1: 149, plan2: 89,  plan3: 55,  plan4: 0},
-    at: {plan1: 149, plan2: 89,  plan3: 55,  plan4: 0},
-    en: {plan1: 149, plan2: 89,  plan3: 55,  plan4: 0},
-    fr: {plan1: 179, plan2: 109, plan3: 75,  plan4: 0},
-    it: {plan1: 179, plan2: 109, plan3: 75,  plan4: 0},
-    zh: {plan1: 249, plan2: 159, plan3: 109, plan4: 0},
-    jp: {plan1: 249, plan2: 159, plan3: 109, plan4: 0},
+    cz: {plan1: 99,  plan2: 50,  plan3: 30, plan4: 0},
+    pl: {plan1: 99,  plan2: 50,  plan3: 30, plan4: 0},
+    de: {plan1: 149, plan2: 74,  plan3: 45, plan4: 0},
+    at: {plan1: 149, plan2: 74,  plan3: 45, plan4: 0},
+    en: {plan1: 149, plan2: 74,  plan3: 45, plan4: 0},
+    fr: {plan1: 179, plan2: 90,  plan3: 54, plan4: 0},
+    it: {plan1: 179, plan2: 90,  plan3: 54, plan4: 0},
+    zh: {plan1: 249, plan2: 124, plan3: 75, plan4: 0},
+    jp: {plan1: 249, plan2: 124, plan3: 75, plan4: 0},
   };
   const KONF_NAZVY_JAZYKOV = {
     cz: 'Čeština', pl: 'Poľština', de: 'Nemčina', at: 'Rakúska nemčina',
@@ -974,10 +975,10 @@ s technickou dokumentáciou.</p>
   };
   const KONF_CENY_PLANOV = {plan1: 399, plan2: 499, plan3: 699, plan4: 999};
   const KONF_NAZVY_PLANOV = {
-    plan1: '#1 PDF Extraktor', plan2: '#2 + Tri jazyky',
-    plan3: '#3 + Web integrácia', plan4: '#4 + Správca lokálne',
+    plan1: '#1 PDF Extraktor', plan2: '#2 + Druhý jazyk',
+    plan3: '#3 + Tretí jazyk + Web integrácia', plan4: '#4 + Všetky jazyky + Správca emailov',
   };
-  const KONF_JAZYKOV_V_CENE = {plan1: 1, plan2: 3, plan3: 3, plan4: 99};
+  const KONF_JAZYKOV_V_CENE = {plan1: 1, plan2: 2, plan3: 3, plan4: 99};
 
   // Ktore jazyky su pre dane odvetvie realne dostupne (turbo pre ine
   // jazyky pre dane odvetvie neexistuje) - musi zodpovedat

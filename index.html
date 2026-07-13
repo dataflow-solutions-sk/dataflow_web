@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="sk">
 <head>
   <meta charset="UTF-8">
@@ -166,6 +166,22 @@
       margin: 12px 0;
       display: block;
     }
+    .vis-box { display:flex; flex-direction:column; align-items:center; gap:8px; }
+    .vis-icon { font-size:2.5rem; line-height:1; }
+    .vis-params-raw { display:flex; flex-direction:column; gap:3px; margin-top:6px; }
+    .vis-params-raw span { font-size:.72rem; color:var(--muted); font-family:monospace; text-align:left; }
+    .vis-params-excel { display:flex; flex-direction:column; gap:2px; margin-top:6px; width:100%; }
+    .xls-row { display:flex; justify-content:space-between; padding:2px 8px; border-radius:3px; font-size:.72rem; font-family:monospace; }
+    .xls-green { background:#e8f5e9; color:#1b5e20; }
+    .xls-yellow { background:#fff9c4; color:#827717; }
+    .faq-list { max-width:720px; margin:0 auto; display:flex; flex-direction:column; gap:8px; }
+    .faq-item { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
+    .faq-q { width:100%; background:none; border:none; color:var(--text); text-align:left; padding:16px 20px; font-size:.95rem; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:12px; }
+    .faq-q:hover { background:rgba(255,255,255,.03); }
+    .faq-arrow { font-size:.8rem; color:var(--accent); transition:transform .2s; flex-shrink:0; }
+    .faq-q.open .faq-arrow { transform:rotate(180deg); }
+    .faq-a { display:none; padding:0 20px 16px; color:var(--muted); font-size:.9rem; line-height:1.6; }
+    .faq-a.open { display:block; }
     .solution-list { list-style: none; margin-top: 20px; }
     .solution-list li {
       padding: 8px 0;
@@ -281,7 +297,7 @@
       transition: max-height .4s ease, padding .3s ease;
     }
     .story-body.open {
-      max-height: 400px;
+      max-height: 800px;
     }
     .story-body-inner {
       padding: 0 28px 28px;
@@ -289,6 +305,15 @@
     }
     .story-body.open .story-body-inner { padding-top: 24px; }
     .story-text { color: var(--muted); font-size: .97rem; line-height: 1.8; white-space: pre-line; }
+    .story-vision {
+      display: block;
+      text-align: center;
+      color: var(--accent);
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-top: 20px;
+      letter-spacing: .02em;
+    }
 
     /* ── VISION (SEKCIA 7) ─────────────────────────────── */
     .vision {
@@ -353,6 +378,96 @@
       text-transform: uppercase;
       margin-bottom: 12px;
     }
+
+    /* ── KONFIGURÁTOR ──────────────────────────────────── */
+    .konf-krok { margin-bottom: 48px; }
+    .konf-krok h3 {
+      display: flex; align-items: center; gap: 12px;
+      font-size: 1.1rem; margin-bottom: 20px;
+    }
+    .konf-krok-cislo {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 30px; height: 30px; flex-shrink: 0;
+      background: var(--accent); color: #111;
+      border-radius: 50%; font-weight: 700; font-size: .9rem;
+    }
+    .konf-krok-zamknuty { opacity: .35; pointer-events: none; transition: opacity .25s; }
+    .konf-krok-zamknuty.odomknuty { opacity: 1; pointer-events: auto; }
+    .konf-zamknute-info {
+      font-size: .8rem; color: var(--accent); font-weight: 400; margin-left: auto;
+    }
+    .konf-krok-zamknuty.odomknuty .konf-zamknute-info { display: none; }
+
+    .konf-odvetvia {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 14px;
+    }
+    .konf-odvetvie-karta {
+      position: relative; aspect-ratio: 4/3; border-radius: var(--radius);
+      overflow: hidden; cursor: pointer; border: 2px solid transparent;
+      transition: border-color .15s, transform .15s;
+    }
+    .konf-odvetvie-karta:hover { transform: translateY(-2px); }
+    .konf-odvetvie-karta input { position: absolute; opacity: 0; }
+    .konf-odvetvie-karta:has(input:checked) { border-color: var(--accent); }
+    .konf-odvetvie-img {
+      position: absolute; inset: 0; background-size: cover; background-position: center;
+      filter: brightness(.6); transition: filter .15s;
+    }
+    .konf-odvetvie-karta:hover .konf-odvetvie-img,
+    .konf-odvetvie-karta:has(input:checked) .konf-odvetvie-img { filter: brightness(.75); }
+    .konf-odvetvie-overlay {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      justify-content: flex-end; padding: 14px 16px;
+      background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,.85) 100%);
+    }
+    .konf-odvetvie-nazov { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 3px; }
+    .konf-odvetvie-popis { font-size: .75rem; color: #ccc; }
+
+    .konf-plany { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+    .konf-plan-karta {
+      position: relative; padding: 22px 18px; text-align: center; cursor: pointer;
+      background: var(--bg-card); border: 2px solid var(--border); border-radius: var(--radius);
+      transition: border-color .15s, transform .15s;
+    }
+    .konf-plan-karta:hover { transform: translateY(-2px); }
+    .konf-plan-karta input { position: absolute; opacity: 0; }
+    .konf-plan-karta:has(input:checked) { border-color: var(--accent); }
+    .konf-plan-cislo { font-size: 1.3rem; color: var(--accent); font-weight: 700; margin-bottom: 6px; }
+    .konf-plan-nazov { font-weight: 600; margin-bottom: 4px; }
+    .konf-plan-popis { font-size: .8rem; color: var(--muted); margin-bottom: 12px; min-height: 2.4em; }
+    .konf-plan-cena { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
+
+    .konf-jazyky-info { color: var(--muted); font-size: .85rem; margin-bottom: 14px; }
+    .konf-jazyky { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+    .konf-jazyk-karta {
+      position: relative; padding: 14px; cursor: pointer;
+      background: var(--bg-card); border: 2px solid var(--border); border-radius: var(--radius);
+      transition: border-color .15s;
+    }
+    .konf-jazyk-karta input { position: absolute; opacity: 0; }
+    .konf-jazyk-karta:has(input:checked) { border-color: var(--accent); }
+    .konf-jazyk-kod { font-size: 1.1rem; font-weight: 700; margin-bottom: 3px; }
+    .konf-jazyk-nazov { font-size: .78rem; color: var(--muted); margin-bottom: 8px; }
+    .konf-jazyk-cena { font-size: .85rem; color: var(--accent); font-weight: 600; }
+    .konf-jazyk-cena.v-cene { color: #4ade80; font-size: .72rem; }
+
+    .konf-zhrnutie {
+      margin-top: 40px; padding: 28px; background: var(--bg-card);
+      border: 2px solid var(--accent); border-radius: 14px;
+    }
+    .konf-zhrnutie h3 { margin-bottom: 14px; }
+    .konf-zhrnutie-riadok {
+      display: flex; justify-content: space-between; padding: 8px 0;
+      border-bottom: 1px solid var(--border); font-size: .92rem;
+    }
+    .konf-zhrnutie-riadok:last-of-type { border-bottom: none; }
+    .konf-zhrnutie-celkom { font-size: 1.3rem; font-weight: 700; color: var(--accent); margin-top: 6px; }
+    .konf-btn-objednat {
+      display: block; width: 100%; padding: 14px; margin-top: 20px;
+      background: var(--accent); color: #111; border: none; border-radius: var(--radius);
+      font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: opacity .15s;
+    }
+    .konf-btn-objednat:disabled { background: #3a3a3a; color: #888; cursor: not-allowed; }
 
     /* ── RESPONSIVE ────────────────────────────────────── */
     @media (max-width: 700px) {
@@ -449,12 +564,167 @@
         </ul>
       </div>
       <div class="solution-visual">
-        <div>📄</div>
-        <span class="vis-label">PDF datasheet</span>
+        <div class="vis-box">
+          <div class="vis-icon">📄</div>
+          <span class="vis-label">PDF datasheet</span>
+          <div class="vis-params-raw">
+            <span>Výkon: 7.5 kW</span>
+            <span>Napätie: 400 V</span>
+            <span>Krytie: IP65</span>
+            <span>Váha: 12.4 kg</span>
+          </div>
+        </div>
         <span class="vis-arrow">⚡</span>
-        <div>📊</div>
-        <span class="vis-label">Excel tabuľka</span>
+        <div class="vis-box">
+          <div class="vis-icon">📊</div>
+          <span class="vis-label">Excel tabuľka</span>
+          <div class="vis-params-excel">
+            <div class="xls-row xls-green"><span class="xls-key">Výkon</span><span class="xls-val">7.5 kW</span></div>
+            <div class="xls-row xls-green"><span class="xls-key">Napätie</span><span class="xls-val">400 V</span></div>
+            <div class="xls-row xls-green"><span class="xls-key">Krytie</span><span class="xls-val">IP65</span></div>
+            <div class="xls-row xls-yellow"><span class="xls-key">Váha</span><span class="xls-val">12.4 kg</span></div>
+          </div>
+        </div>
       </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  SEKCIA 3b — KONFIGURÁTOR                              -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="section" id="konfigurator">
+  <div class="container">
+    <div class="center" style="margin-bottom:40px;">
+      <span class="section-label">Konfigurátor</span>
+      <h2>Poskladajte si svoj balíček</h2>
+      <p class="muted" style="margin-top:10px;">Vyberte si odvetvie, plán a jazyky podľa vašich dokumentov.</p>
+    </div>
+
+    <!-- KROK 1 — ODVETVIE -->
+    <div class="konf-krok">
+      <h3><span class="konf-krok-cislo">1</span> Vyberte vaše odvetvie</h3>
+      <div class="konf-odvetvia" id="konf-odvetvia">
+        <label class="konf-odvetvie-karta">
+          <input type="radio" name="konf-odvetvie" value="elektro">
+          <div class="konf-odvetvie-img" style="background-image:url('assets/images/odvetvia/elektro.jpg')"></div>
+          <div class="konf-odvetvie-overlay">
+            <span class="konf-odvetvie-nazov">Elektrotechnika</span>
+            <span class="konf-odvetvie-popis">ABB, Siemens, Schneider</span>
+          </div>
+        </label>
+        <label class="konf-odvetvie-karta">
+          <input type="radio" name="konf-odvetvie" value="strojari">
+          <div class="konf-odvetvie-img" style="background-image:url('assets/images/odvetvia/strojari.jpg')"></div>
+          <div class="konf-odvetvie-overlay">
+            <span class="konf-odvetvie-nazov">Strojárstvo</span>
+            <span class="konf-odvetvie-popis">SKF, Bosch, Festo</span>
+          </div>
+        </label>
+        <label class="konf-odvetvie-karta">
+          <input type="radio" name="konf-odvetvie" value="hvac">
+          <div class="konf-odvetvie-img" style="background-image:url('assets/images/odvetvia/hvac.jpg')"></div>
+          <div class="konf-odvetvie-overlay">
+            <span class="konf-odvetvie-nazov">HVAC</span>
+            <span class="konf-odvetvie-popis">Kúrenie, klimatizácia, ventilácia</span>
+          </div>
+        </label>
+        <label class="konf-odvetvie-karta">
+          <input type="radio" name="konf-odvetvie" value="servis">
+          <div class="konf-odvetvie-img" style="background-image:url('assets/images/odvetvia/servis.jpg')"></div>
+          <div class="konf-odvetvie-overlay">
+            <span class="konf-odvetvie-nazov">Servis strojov</span>
+            <span class="konf-odvetvie-popis">Fanuc, KUKA, DMG</span>
+          </div>
+        </label>
+        <label class="konf-odvetvie-karta">
+          <input type="radio" name="konf-odvetvie" value="nakup">
+          <div class="konf-odvetvie-img" style="background-image:url('assets/images/odvetvia/nakup.jpg')"></div>
+          <div class="konf-odvetvie-overlay">
+            <span class="konf-odvetvie-nazov">Nákupné oddelenie</span>
+            <span class="konf-odvetvie-popis">Ponuky, faktúry, kontrakty</span>
+          </div>
+        </label>
+        <label class="konf-odvetvie-karta">
+          <input type="radio" name="konf-odvetvie" value="plastikari">
+          <div class="konf-odvetvie-img" style="background-image:url('assets/images/odvetvia/plastikari.jpg')"></div>
+          <div class="konf-odvetvie-overlay">
+            <span class="konf-odvetvie-nazov">Plastikárstvo</span>
+            <span class="konf-odvetvie-popis">BASF, DuPont, Covestro</span>
+          </div>
+        </label>
+        <label class="konf-odvetvie-karta">
+          <input type="radio" name="konf-odvetvie" value="drevo">
+          <div class="konf-odvetvie-img" style="background-image:url('assets/images/odvetvia/drevo.jpg')"></div>
+          <div class="konf-odvetvie-overlay">
+            <span class="konf-odvetvie-nazov">Drevospracovanie</span>
+            <span class="konf-odvetvie-popis">Homag, Biesse, Blum</span>
+          </div>
+        </label>
+        <label class="konf-odvetvie-karta">
+          <input type="radio" name="konf-odvetvie" value="stavtech">
+          <div class="konf-odvetvie-img" style="background-image:url('assets/images/odvetvia/stavtech.jpg')"></div>
+          <div class="konf-odvetvie-overlay">
+            <span class="konf-odvetvie-nazov">Stavebné technológie</span>
+            <span class="konf-odvetvie-popis">Výťahy, EPS, EZS</span>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <!-- KROK 2 — PLÁN -->
+    <div class="konf-krok konf-krok-zamknuty" id="konf-krok-plan">
+      <h3><span class="konf-krok-cislo">2</span> Vyberte plán <span class="konf-zamknute-info">Najprv zvoľte odvetvie ↑</span></h3>
+      <div class="konf-plany">
+        <label class="konf-plan-karta">
+          <input type="radio" name="konf-plan" value="plan1">
+          <div class="konf-plan-cislo">#1</div>
+          <div class="konf-plan-nazov">PDF Extraktor</div>
+          <div class="konf-plan-popis">1 jazyk, obmedzené strany</div>
+          <div class="konf-plan-cena">399 €</div>
+        </label>
+        <label class="konf-plan-karta">
+          <input type="radio" name="konf-plan" value="plan2">
+          <div class="konf-plan-cislo">#2</div>
+          <div class="konf-plan-nazov">+ Tri jazyky</div>
+          <div class="konf-plan-popis">3 jazyky, viac strán</div>
+          <div class="konf-plan-cena">499 €</div>
+        </label>
+        <label class="konf-plan-karta">
+          <input type="radio" name="konf-plan" value="plan3">
+          <div class="konf-plan-cislo">#3</div>
+          <div class="konf-plan-nazov">+ Web integrácia</div>
+          <div class="konf-plan-popis">Neobmedzené dokumenty</div>
+          <div class="konf-plan-cena">699 €</div>
+        </label>
+        <label class="konf-plan-karta">
+          <input type="radio" name="konf-plan" value="plan4">
+          <div class="konf-plan-cislo">#4</div>
+          <div class="konf-plan-nazov">+ Správca lokálne</div>
+          <div class="konf-plan-popis">Všetko + lokálny triedič</div>
+          <div class="konf-plan-cena">999 €</div>
+        </label>
+      </div>
+    </div>
+
+    <!-- KROK 3 — JAZYKY -->
+    <div class="konf-krok konf-krok-zamknuty" id="konf-krok-jazyky">
+      <h3><span class="konf-krok-cislo">3</span> Vyberte jazyky dokumentov <span class="konf-zamknute-info">Najprv zvoľte plán ↑</span></h3>
+      <p class="konf-jazyky-info">Ceny jazykov závisia od vybraného plánu. Plán #4 obsahuje všetky jazyky v cene.</p>
+      <div class="konf-jazyky" id="konf-jazyky"></div>
+    </div>
+
+    <!-- ZHRNUTIE -->
+    <div class="konf-zhrnutie" id="konf-zhrnutie">
+      <h3>Zhrnutie objednávky</h3>
+      <div class="konf-zhrnutie-riadok"><span>Odvetvie:</span> <span id="konf-sum-odvetvie">—</span></div>
+      <div class="konf-zhrnutie-riadok"><span>Plán:</span> <span id="konf-sum-plan">—</span></div>
+      <div class="konf-zhrnutie-riadok"><span>Jazyky:</span> <span id="konf-sum-jazyky">—</span></div>
+      <div class="konf-zhrnutie-riadok"><span>Extra jazyky:</span> <span id="konf-sum-extra">0 €</span></div>
+      <div class="konf-zhrnutie-riadok konf-zhrnutie-celkom"><span>Celkom bez DPH:</span> <span id="konf-sum-celkom">0 €</span></div>
+      <button class="konf-btn-objednat" id="konf-btn-objednat" disabled>Objednať → firemný email</button>
     </div>
   </div>
 </section>
@@ -468,17 +738,18 @@
   <div class="container">
     <div class="center" style="margin-bottom:40px;">
       <span class="section-label">Cena</span>
-      <h2>Jednoduché a transparentné</h2>
+      <h2>Ceny podľa vašich potrieb</h2>
     </div>
     <div class="price-card">
-      <div class="price-amount">500 EUR</div>
-      <p class="price-note">Jednorazová platba. Bez mesačných poplatkov.</p>
+      <div class="price-amount">Od 399 €</div>
+      <p class="price-note">Základný plán. Poskladajte si balíček podľa vášho odvetvia a jazykov.</p>
       <ul class="price-features">
         <li><span class="chk">✓</span> Trvalá licencia</li>
         <li><span class="chk">✓</span> 10 PDF zadarmo na vyskúšanie</li>
         <li><span class="chk">✓</span> Podpora emailom</li>
       </ul>
-      <a href="#kontakt" class="btn" style="width:100%; text-align:center; display:block;">Vyskúšať 10 PDF zadarmo</a>
+      <a href="#kontakt" class="btn" style="width:100%; text-align:center; display:block; margin-bottom:10px;">Vyskúšať 10 PDF zadarmo</a>
+      <a href="#konfigurator" class="btn" style="width:100%; text-align:center; display:block; background:transparent; border:1px solid var(--accent); color:var(--accent);">Poskladať balíček</a>
     </div>
   </div>
 </section>
@@ -508,13 +779,69 @@
 <hr class="divider">
 
 <!-- ═══════════════════════════════════════════════════════ -->
+<!--  SEKCIA 5b — FAQ                                       -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="section" id="faq">
+  <div class="container">
+    <div class="center" style="margin-bottom:40px;">
+      <span class="section-label">FAQ</span>
+      <h2>Časté otázky</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Funguje to aj so skenovanými PDF?<span class="faq-arrow">↓</span></button>
+        <div class="faq-a">Najlepšie funguje s digitálnymi PDF od výrobcov. Skenované PDF (fotografie papiera) mávajú nižšiu presnosť. Odporúčame stiahnuť originálny digitálny datasheet priamo z webu výrobcu.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Aká je presnosť extrakcie?<span class="faq-arrow">↓</span></button>
+        <div class="faq-a">Pri kvalitných digitálnych PDF dosahujeme 95%+ presnosť. Každá extrahovaná hodnota má farebný indikátor spoľahlivosti — biela (istá), žltá (pravdepodobná), oranžová (neistá), červená (odhad). Výsledky vždy pred použitím skontrolujte.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Kde zostávajú moje PDF súbory?<span class="faq-arrow">↓</span></button>
+        <div class="faq-a">Výhradne na vašom počítači. Softvér je lokálna aplikácia — žiadne PDF ani parametre sa neodosielajú na naše servery. Na AI spracovanie posielame len extrahovaný text (nie súbory) cez šifrované spojenie.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Koľko PDF dokáže spracovať naraz?<span class="faq-arrow">↓</span></button>
+        <div class="faq-a">Môžete nahodiť ľubovoľný počet PDF naraz. Softvér ich spracuje postupne — každý trvá 30–60 sekúnd. Výsledky pribúdajú do Excel súboru priebežne.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">S akými výrobcami to funguje?<span class="faq-arrow">↓</span></button>
+        <div class="faq-a">Funguje s datasheetmi od všetkých hlavných výrobcov — Siemens, ABB, Schneider Electric, Eaton, Phoenix Contact, Lapp, Rittal a ďalších. Ak výrobca vydáva digitálne PDF, väčšinou to funguje.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Čo ak softvér nevie nájsť nejakú hodnotu?<span class="faq-arrow">↓</span></button>
+        <div class="faq-a">Bunka zostane prázdna — softvér nikdy nehádza ani nedopĺňa hodnoty z vlastnej hlavy. Vždy prepisuje len to, čo je priamo v PDF. Chýbajúce hodnoty sú označené sivou farbou.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Aký je rozdiel oproti copy-paste z PDF?<span class="faq-arrow">↓</span></button>
+        <div class="faq-a">Ručný copy-paste jedného datasheetu trvá 5–15 minút. PDF Extraktor to zvládne za 30–60 sekúnd a rovnako štruktúrovaný výstup dostanete pre každý PDF — bez chýb z preklep a bez zabudnutých parametrov.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Potrebujem internet na používanie?<span class="faq-arrow">↓</span></button>
+        <div class="faq-a">Áno, pre AI spracovanie je potrebné internetové pripojenie (komunikácia s Groq API). Samotný softvér beží lokálne — internet je potrebný len počas samotnej extrakcie parametrov.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Koľko stojí plná licencia?<span class="faq-arrow">↓</span></button>
+        <div class="faq-a">500 EUR — jednorazová platba, bez mesačných poplatkov. Obsahuje 10 PDF zadarmo na vyskúšanie, plnú licenciu a emailovú podporu. Viete vyskúšať pred nákupom.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Čo sa stane po vypršaní trialu?<span class="faq-arrow">↓</span></button>
+        <div class="faq-a">Po 10 bezplatných PDF softvér prestane spracovávať nové súbory. Vaše existujúce výsledky a PDF zostanú nedotknuté. Licenciu môžete dokúpiť kedykoľvek — stačí nás kontaktovať emailom.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════════ -->
 <!--  SEKCIA 6 — PRÍBEH                                     -->
 <!-- ═══════════════════════════════════════════════════════ -->
 <section class="section-sm">
   <div class="container">
     <div class="story-header">
       <span class="label">Ako to začalo</span>
-      <h2>Náš príbeh</h2>
+      <h2>Náš Príbeh</h2>
     </div>
     <div class="story-card">
       <button class="story-toggle-btn" onclick="toggleStory(this)" aria-expanded="false">
@@ -529,7 +856,13 @@ Sledoval som ako elektroprojektanti a strojárski inžinieri trávia hodiny prep
 
 Práca, na ktorú neštudovali techniku.
 
-Rozhodol som sa to zmeniť. Výsledkom je nástroj ktorý túto prácu robí za pár sekúnd.</p>
+Rozhodol som sa to zmeniť. Výsledkom je nástroj ktorý túto prácu robí za pár sekúnd.
+
+Sme začiatok. Toto je len prvý produkt.
+Plánujeme transformovať celý spôsob
+ako európsky priemysel pracuje
+s technickou dokumentáciou.</p>
+          <span class="story-vision">Sme budúcnosť.</span>
         </div>
       </div>
     </div>
@@ -544,6 +877,7 @@ Rozhodol som sa to zmeniť. Výsledkom je nástroj ktorý túto prácu robí za 
 <section class="vision">
   <div class="container">
     <div class="vision-headline">
+      <span class="section-label">Vízia</span>
       <h2>Európa vie konkurovať USA aj Číne v AI.</h2>
       <p class="subline">Stačí začať.</p>
     </div>
@@ -575,9 +909,24 @@ Rozhodol som sa to zmeniť. Výsledkom je nástroj ktorý túto prácu robí za 
   <p>© 2026 DataFlow Solutions</p>
   <p><a href="https://dataflowsolutions.sk">dataflowsolutions.sk</a></p>
   <p style="margin-top:8px;">Softvér je chránený autorským zákonom.</p>
+  <p style="margin-top:8px;"><a href="vop.html">Obchodné podmienky</a> · <a href="privacy.html">Ochrana osobných údajov</a></p>
 </footer>
 
 <script>
+  function toggleFaq(btn) {
+    const a = btn.nextElementSibling;
+    const isOpen = a.classList.contains('open');
+    document.querySelectorAll('.faq-a.open').forEach(el => el.classList.remove('open'));
+    document.querySelectorAll('.faq-q.open').forEach(el => {
+      el.classList.remove('open');
+      el.setAttribute('aria-expanded', 'false');
+    });
+    if (!isOpen) {
+      a.classList.add('open');
+      btn.classList.add('open');
+      btn.setAttribute('aria-expanded', 'true');
+    }
+  }
   function toggleStory(btn) {
     const body = document.getElementById('storyBody');
     const isOpen = body.classList.contains('open');
@@ -595,6 +944,116 @@ Rozhodol som sa to zmeniť. Výsledkom je nástroj ktorý túto prácu robí za 
       btn.setAttribute('aria-expanded', 'true');
     }
   }
+
+  // ── KONFIGURÁTOR ──────────────────────────────────────────────
+  // Objednávka (firemný email + faktúra) sa dokončuje na existujúcej,
+  // už funkčnej stránke web/cennik.html (samostatný projekt
+  // pdf_extraktor, backend/email_overenie.py) — konfigurátor tu na
+  // dataflowsolutions.sk len poskladá výber a odovzdá ho cez URL
+  // parametre, namiesto duplikovania celého objednávkového/emailového
+  // flow na tomto webe. Uprav na skutočnú produkčnú adresu pri nasadení.
+  const KONFIGURATOR_OBJEDNAVKA_URL = 'https://pdf-extraktor.sk/cennik.html';
+
+  const KONF_CENY_JAZYKOV = {
+    cz: {plan1: 59,  plan2: 45,  plan3: 29,  plan4: 0},
+    pl: {plan1: 59,  plan2: 45,  plan3: 29,  plan4: 0},
+    de: {plan1: 89,  plan2: 69,  plan3: 49,  plan4: 0},
+    at: {plan1: 89,  plan2: 69,  plan3: 49,  plan4: 0},
+    en: {plan1: 89,  plan2: 69,  plan3: 49,  plan4: 0},
+    fr: {plan1: 109, plan2: 85,  plan3: 65,  plan4: 0},
+    it: {plan1: 109, plan2: 85,  plan3: 65,  plan4: 0},
+    zh: {plan1: 159, plan2: 129, plan3: 99,  plan4: 0},
+    jp: {plan1: 159, plan2: 129, plan3: 99,  plan4: 0},
+  };
+  const KONF_NAZVY_JAZYKOV = {
+    cz: 'Čeština', pl: 'Poľština', de: 'Nemčina', at: 'Rakúska nemčina',
+    en: 'Angličtina', fr: 'Francúzština', it: 'Taliančina', zh: 'Čínština', jp: 'Japončina',
+  };
+  const KONF_CENY_PLANOV = {plan1: 399, plan2: 499, plan3: 699, plan4: 999};
+  const KONF_NAZVY_PLANOV = {
+    plan1: '#1 PDF Extraktor', plan2: '#2 + Tri jazyky',
+    plan3: '#3 + Web integrácia', plan4: '#4 + Správca lokálne',
+  };
+  const KONF_JAZYKOV_V_CENE = {plan1: 1, plan2: 3, plan3: 3, plan4: 9};
+
+  const konfStav = { odvetvie: null, plan: null, jazyky: [] };
+
+  document.querySelectorAll('input[name="konf-odvetvie"]').forEach(r => {
+    r.addEventListener('change', () => {
+      konfStav.odvetvie = r.value;
+      document.getElementById('konf-krok-plan').classList.add('odomknuty');
+      konfAktualizujZhrnutie();
+    });
+  });
+
+  document.querySelectorAll('input[name="konf-plan"]').forEach(r => {
+    r.addEventListener('change', () => {
+      konfStav.plan = r.value;
+      konfStav.jazyky = [];
+      document.getElementById('konf-krok-jazyky').classList.add('odomknuty');
+      konfVygenerujJazyky();
+      konfAktualizujZhrnutie();
+    });
+  });
+
+  function konfVygenerujJazyky() {
+    const mriezka = document.getElementById('konf-jazyky');
+    mriezka.innerHTML = '';
+    for (const [kod, ceny] of Object.entries(KONF_CENY_JAZYKOV)) {
+      const cena = ceny[konfStav.plan];
+      const vCene = cena === 0;
+      const karta = document.createElement('label');
+      karta.className = 'konf-jazyk-karta';
+      karta.innerHTML = `
+        <input type="checkbox" name="konf-jazyk" value="${kod}">
+        <div class="konf-jazyk-kod">${kod.toUpperCase()}</div>
+        <div class="konf-jazyk-nazov">${KONF_NAZVY_JAZYKOV[kod]}</div>
+        <div class="konf-jazyk-cena ${vCene ? 'v-cene' : ''}">${vCene ? '✓ V cene plánu' : '+' + cena + ' €'}</div>
+      `;
+      karta.querySelector('input').addEventListener('change', e => {
+        if (e.target.checked) konfStav.jazyky.push(kod);
+        else konfStav.jazyky = konfStav.jazyky.filter(j => j !== kod);
+        konfAktualizujZhrnutie();
+      });
+      mriezka.appendChild(karta);
+    }
+  }
+
+  function konfAktualizujZhrnutie() {
+    document.getElementById('konf-sum-odvetvie').textContent = konfStav.odvetvie || '—';
+    document.getElementById('konf-sum-plan').textContent = konfStav.plan
+      ? `${KONF_NAZVY_PLANOV[konfStav.plan]} (${KONF_CENY_PLANOV[konfStav.plan]} €)` : '—';
+    document.getElementById('konf-sum-jazyky').textContent =
+      konfStav.jazyky.length ? konfStav.jazyky.map(j => j.toUpperCase()).join(', ') : '—';
+
+    let extraCena = 0;
+    if (konfStav.plan) {
+      const vCene = KONF_JAZYKOV_V_CENE[konfStav.plan];
+      let pouzitych = 0;
+      for (const kod of konfStav.jazyky) {
+        const cena = KONF_CENY_JAZYKOV[kod][konfStav.plan];
+        if (cena === 0) continue;
+        pouzitych++;
+        if (pouzitych > vCene) extraCena += cena;
+      }
+    }
+    document.getElementById('konf-sum-extra').textContent = `${extraCena} €`;
+
+    const celkom = (KONF_CENY_PLANOV[konfStav.plan] || 0) + extraCena;
+    document.getElementById('konf-sum-celkom').textContent = `${celkom} €`;
+
+    const btn = document.getElementById('konf-btn-objednat');
+    btn.disabled = !(konfStav.odvetvie && konfStav.plan && konfStav.jazyky.length > 0);
+  }
+
+  document.getElementById('konf-btn-objednat').addEventListener('click', () => {
+    const params = new URLSearchParams({
+      odvetvie: konfStav.odvetvie,
+      plan: konfStav.plan,
+      jazyky: konfStav.jazyky.join(','),
+    });
+    window.location.href = `${KONFIGURATOR_OBJEDNAVKA_URL}?${params.toString()}`;
+  });
 </script>
 </body>
 </html>

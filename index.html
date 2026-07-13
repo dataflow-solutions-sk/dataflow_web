@@ -954,16 +954,19 @@ s technickou dokumentáciou.</p>
   // flow na tomto webe. Uprav na skutočnú produkčnú adresu pri nasadení.
   const KONFIGURATOR_OBJEDNAVKA_URL = 'https://pdf-extraktor.sk/cennik.html';
 
+  // Zdielany zdroj s backend/ceny.py + backend/pricing.py (pdf_extraktor
+  // repozitar) - pri zmene cien/jazykov treba upravit na oboch miestach,
+  // tento web nema spolocny build s pdf_extraktor.
   const KONF_CENY_JAZYKOV = {
-    cz: {plan1: 59,  plan2: 45,  plan3: 29,  plan4: 0},
-    pl: {plan1: 59,  plan2: 45,  plan3: 29,  plan4: 0},
-    de: {plan1: 89,  plan2: 69,  plan3: 49,  plan4: 0},
-    at: {plan1: 89,  plan2: 69,  plan3: 49,  plan4: 0},
-    en: {plan1: 89,  plan2: 69,  plan3: 49,  plan4: 0},
-    fr: {plan1: 109, plan2: 85,  plan3: 65,  plan4: 0},
-    it: {plan1: 109, plan2: 85,  plan3: 65,  plan4: 0},
-    zh: {plan1: 159, plan2: 129, plan3: 99,  plan4: 0},
-    jp: {plan1: 159, plan2: 129, plan3: 99,  plan4: 0},
+    cz: {plan1: 99,  plan2: 59,  plan3: 35,  plan4: 0},
+    pl: {plan1: 99,  plan2: 59,  plan3: 35,  plan4: 0},
+    de: {plan1: 149, plan2: 89,  plan3: 55,  plan4: 0},
+    at: {plan1: 149, plan2: 89,  plan3: 55,  plan4: 0},
+    en: {plan1: 149, plan2: 89,  plan3: 55,  plan4: 0},
+    fr: {plan1: 179, plan2: 109, plan3: 75,  plan4: 0},
+    it: {plan1: 179, plan2: 109, plan3: 75,  plan4: 0},
+    zh: {plan1: 249, plan2: 159, plan3: 109, plan4: 0},
+    jp: {plan1: 249, plan2: 159, plan3: 109, plan4: 0},
   };
   const KONF_NAZVY_JAZYKOV = {
     cz: 'Čeština', pl: 'Poľština', de: 'Nemčina', at: 'Rakúska nemčina',
@@ -974,14 +977,32 @@ s technickou dokumentáciou.</p>
     plan1: '#1 PDF Extraktor', plan2: '#2 + Tri jazyky',
     plan3: '#3 + Web integrácia', plan4: '#4 + Správca lokálne',
   };
-  const KONF_JAZYKOV_V_CENE = {plan1: 1, plan2: 3, plan3: 3, plan4: 9};
+  const KONF_JAZYKOV_V_CENE = {plan1: 1, plan2: 3, plan3: 3, plan4: 99};
+
+  // Ktore jazyky su pre dane odvetvie realne dostupne (turbo pre ine
+  // jazyky pre dane odvetvie neexistuje) - musi zodpovedat
+  // ODVETVIE_JAZYKY v backend/pricing.py. PREDTYM konfigurator ponukal
+  // vsetkych 9 jazykov nezavisle od zvoleneho odvetvia, hoci kazde
+  // odvetvie realne podporuje presne 3 z nich.
+  const KONF_ODVETVIE_JAZYKY = {
+    elektro:    ['de', 'at', 'pl'],
+    strojari:   ['de', 'at', 'cz'],
+    hvac:       ['de', 'at', 'it'],
+    servis:     ['de', 'en', 'jp'],
+    nakup:      ['de', 'en', 'zh'],
+    plastikari: ['de', 'en', 'fr'],
+    drevo:      ['de', 'at', 'it'],
+    stavtech:   ['de', 'at', 'fr'],
+  };
 
   const konfStav = { odvetvie: null, plan: null, jazyky: [] };
 
   document.querySelectorAll('input[name="konf-odvetvie"]').forEach(r => {
     r.addEventListener('change', () => {
       konfStav.odvetvie = r.value;
+      konfStav.jazyky = [];
       document.getElementById('konf-krok-plan').classList.add('odomknuty');
+      if (konfStav.plan) konfVygenerujJazyky();
       konfAktualizujZhrnutie();
     });
   });
@@ -999,7 +1020,9 @@ s technickou dokumentáciou.</p>
   function konfVygenerujJazyky() {
     const mriezka = document.getElementById('konf-jazyky');
     mriezka.innerHTML = '';
-    for (const [kod, ceny] of Object.entries(KONF_CENY_JAZYKOV)) {
+    const povolene = KONF_ODVETVIE_JAZYKY[konfStav.odvetvie] || [];
+    for (const kod of povolene) {
+      const ceny = KONF_CENY_JAZYKOV[kod];
       const cena = ceny[konfStav.plan];
       const vCene = cena === 0;
       const karta = document.createElement('label');
@@ -1026,16 +1049,17 @@ s technickou dokumentáciou.</p>
     document.getElementById('konf-sum-jazyky').textContent =
       konfStav.jazyky.length ? konfStav.jazyky.map(j => j.toUpperCase()).join(', ') : '—';
 
+    // Najdrahsie vybrane jazyky su "v cene" (zadarmo), zvysne (lacnejsie)
+    // sa doplatia - rovnaka logika ako backend/pricing.py.vypocitaj_cenu()
+    // (maximalna vyhoda pre zakaznika, server si to pri objednavke
+    // prepocita nezavisle).
     let extraCena = 0;
     if (konfStav.plan) {
       const vCene = KONF_JAZYKOV_V_CENE[konfStav.plan];
-      let pouzitych = 0;
-      for (const kod of konfStav.jazyky) {
-        const cena = KONF_CENY_JAZYKOV[kod][konfStav.plan];
-        if (cena === 0) continue;
-        pouzitych++;
-        if (pouzitych > vCene) extraCena += cena;
-      }
+      const cenyVybranych = konfStav.jazyky
+        .map(kod => KONF_CENY_JAZYKOV[kod][konfStav.plan])
+        .sort((a, b) => b - a);
+      extraCena = cenyVybranych.slice(vCene).reduce((a, b) => a + b, 0);
     }
     document.getElementById('konf-sum-extra').textContent = `${extraCena} €`;
 

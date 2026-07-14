@@ -174,6 +174,15 @@
     .xls-row { display:flex; justify-content:space-between; padding:2px 8px; border-radius:3px; font-size:.72rem; font-family:monospace; }
     .xls-green { background:#e8f5e9; color:#1b5e20; }
     .xls-yellow { background:#fff9c4; color:#827717; }
+    /* ── AKO TO FUNGUJE — reálne príklady ─────────────────── */
+    .ukazka-disclaimer { color:var(--muted); font-size:.78rem; line-height:1.7; max-width:640px; margin:0 auto 32px; text-align:center; }
+    .ukazka-priklad { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:22px; margin-bottom:18px; }
+    .ukazka-priklad h3 { font-size:1rem; margin-bottom:2px; }
+    .ukazka-meta { font-size:.78rem; color:var(--muted); margin-bottom:16px; }
+    .ukazka-dvojica { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    @media (max-width:700px) { .ukazka-dvojica { grid-template-columns:1fr; } }
+    .ukazka-stlpec h4 { font-size:.72rem; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin-bottom:8px; }
+    .ukazka-pdf { background:var(--bg); border:1px solid var(--border); border-radius:6px; padding:12px; font-family:monospace; font-size:.75rem; white-space:pre-wrap; line-height:1.6; color:var(--text); }
     .faq-list { max-width:720px; margin:0 auto; display:flex; flex-direction:column; gap:8px; }
     .faq-item { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
     .faq-q { width:100%; background:none; border:none; color:var(--text); text-align:left; padding:16px 20px; font-size:.95rem; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:12px; }
@@ -725,6 +734,107 @@
       <div class="konf-zhrnutie-riadok"><span>Extra jazyky:</span> <span id="konf-sum-extra">0 €</span></div>
       <div class="konf-zhrnutie-riadok konf-zhrnutie-celkom"><span>Celkom bez DPH:</span> <span id="konf-sum-celkom">0 €</span></div>
       <button class="konf-btn-objednat" id="konf-btn-objednat" disabled>Objednať → firemný email</button>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  SEKCIA 3c — AKO TO FUNGUJE (reálne príklady)          -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="container">
+    <div class="center" style="margin-bottom:16px;">
+      <span class="section-label">Ako to funguje</span>
+      <h2>Skutočné, overené výstupy</h2>
+    </div>
+    <p class="ukazka-disclaimer">
+      Žiadne vymyslené ukážky. Tieto príklady pochádzajú z reálnych integračných testov systému
+      (testy/integracny_test_3.py) — vstupný text zodpovedá typickému úryvku z PDF datasheetu,
+      výstup je skutočný výsledok, ktorý motor v teste vrátil.
+    </p>
+
+    <div class="ukazka-priklad">
+      <h3>Elektrotechnika</h3>
+      <div class="ukazka-meta">Nemecký datasheet (Leitungsschutzschalter) → slovenský výstup</div>
+      <div class="ukazka-dvojica">
+        <div class="ukazka-stlpec">
+          <h4>Vstup (PDF text)</h4>
+          <div class="ukazka-pdf">Technische Daten — Leitungsschutzschalter S201
+Nennspannung: 230/400V AC
+Nennstrom: 16A
+Charakteristik: C
+Schutzart: IP20
+Kurzschlussschaltvermögen Ics: 6kA
+Polzahl: 1</div>
+        </div>
+        <div class="ukazka-stlpec">
+          <h4>Výstup (extrahované)</h4>
+          <div class="vis-params-excel">
+            <div class="xls-row xls-green"><span class="xls-key">menovité napätie</span><span class="xls-val">230/400 V AC</span></div>
+            <div class="xls-row xls-green"><span class="xls-key">menovitý prúd</span><span class="xls-val">16 A</span></div>
+            <div class="xls-row xls-green"><span class="xls-key">charakteristika</span><span class="xls-val">C</span></div>
+            <div class="xls-row xls-green"><span class="xls-key">druh ochrany</span><span class="xls-val">IP20</span></div>
+            <div class="xls-row xls-yellow"><span class="xls-key">skratový prúd Ics</span><span class="xls-val">6 kA</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ukazka-priklad">
+      <h3>Strojárstvo — ložiská</h3>
+      <div class="ukazka-meta">Nemecký katalógový list (SKF ložisko) → slovenský výstup</div>
+      <div class="ukazka-dvojica">
+        <div class="ukazka-stlpec">
+          <h4>Vstup (PDF text)</h4>
+          <div class="ukazka-pdf">SKF 6204-2RS1
+Rillenkugellager, beidseitig abgedichtet
+Innendurchmesser d: 20 mm
+Außendurchmesser D: 47 mm
+Breite B: 14 mm
+Dynamische Tragzahl C: 12,7 kN
+Grenzdrehzahl: 18000 min⁻¹</div>
+        </div>
+        <div class="ukazka-stlpec">
+          <h4>Výstup (extrahované)</h4>
+          <div class="vis-params-excel">
+            <div class="xls-row xls-green"><span class="xls-key">ložisko</span><span class="xls-val">6204-2RS1</span></div>
+            <div class="xls-row xls-green"><span class="xls-key">vnútorný priemer d</span><span class="xls-val">20 mm</span></div>
+            <div class="xls-row xls-green"><span class="xls-key">vonkajší priemer D</span><span class="xls-val">47 mm</span></div>
+            <div class="xls-row xls-green"><span class="xls-key">dynamická únosnosť C</span><span class="xls-val">12,7 kN</span></div>
+            <div class="xls-row xls-yellow"><span class="xls-key">medzné otáčky</span><span class="xls-val">18000 min⁻¹</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ukazka-priklad">
+      <h3>Stavebné technológie — výťahy</h3>
+      <div class="ukazka-meta">Nemecký technický list (Schindler výťah) → slovenský výstup</div>
+      <div class="ukazka-dvojica">
+        <div class="ukazka-stlpec">
+          <h4>Vstup (PDF text)</h4>
+          <div class="ukazka-pdf">Schindler 3300 — Technische Daten
+Tragfähigkeit: 630 kg / 8 Personen
+Nenngeschwindigkeit: 1,0 m/s
+Förderhöhe max.: 30 m
+Norm: EN 81-20</div>
+        </div>
+        <div class="ukazka-stlpec">
+          <h4>Výstup (extrahované)</h4>
+          <div class="vis-params-excel">
+            <div class="xls-row xls-green"><span class="xls-key">nosnosť výťahu</span><span class="xls-val">630 kg / 8 osôb</span></div>
+            <div class="xls-row xls-green"><span class="xls-key">menovitá rýchlosť</span><span class="xls-val">1,0 m/s</span></div>
+            <div class="xls-row xls-green"><span class="xls-key">dopravná výška</span><span class="xls-val">30 m</span></div>
+            <div class="xls-row xls-yellow"><span class="xls-key">norma</span><span class="xls-val">EN 81-20 (nepreložené)</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="center" style="margin-top:30px;">
+      <a href="#konfigurator" class="btn">Chcem to vyskúšať →</a>
     </div>
   </div>
 </section>
